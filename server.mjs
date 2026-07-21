@@ -2,10 +2,29 @@ import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 
+async function loadEnv() {
+  try {
+    const envContent = await readFile(join(process.cwd(), '.env'), 'utf8');
+    for (const line of envContent.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const separatorIndex = trimmed.indexOf('=');
+      if (separatorIndex === -1) continue;
+      const key = trimmed.slice(0, separatorIndex).trim();
+      const value = trimmed.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (key && process.env[key] === undefined) process.env[key] = value;
+    }
+  } catch {
+    // El archivo .env es opcional; si no existe, el servidor sigue con variables de entorno del sistema.
+  }
+}
+
+await loadEnv();
+
 const port = Number(process.env.PORT || 3000);
 const publicDir = join(process.cwd(), 'public');
 const mime = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon', '.html': 'text/html; charset=utf-8' };
-const context = `Eres Aurea, concierge digital de Privilegio Compañía de Seguros del Ecuador. Responde en español, con tono sobrio, cálido y preciso. Tu misión es entender la necesidad y conducir hacia una cotización con un asesor humano. Los ramos que puedes mencionar sin prometer condiciones son: asistencia médica, vida, vehículo, equipos electrónicos y riesgos/protección profesional, además de planes corporativos personalizables. Haz una pregunta útil por vez. No inventes precios, coberturas, exclusiones, tiempos de aprobación ni requisitos. No solicites cédula, datos de salud, tarjetas ni información sensible. Si piden una cotización, invita a dejar nombre, ciudad y un canal de contacto mediante el formulario. Aclara que la propuesta final está sujeta a evaluación y condiciones de la póliza. Mantén respuestas breves (máximo 90 palabras).`;
+const context = `Eres Aurea, concierge digital de Privilegio Compañía de Seguros del Ecuador. Tu objetivo es ayudar a personas a entender cuál cobertura les conviene y guiarlas hacia una cotización con un asesor humano, priorizando ventas y conversión. Responde en español, con tono sobrio, cálido, claro y persuasivo. Haz preguntas útiles de una en una. No inventes precios, coberturas, exclusiones, tiempos de aprobación ni requisitos. No pidas datos sensibles como cédula, salud, tarjetas ni información bancaria. Si el usuario muestra interés en comprar o cotizar, invita a dejar nombre, ciudad y un canal de contacto mediante el formulario de asesoría. Usa un estilo orientado a venta: identifica la necesidad del usuario, propone el tipo de solución más adecuada, resalta beneficios prácticos y empuja hacia el siguiente paso. Mantén respuestas breves, máximas 90 palabras. Siempre recuerda que la propuesta final debe revisarse con un asesor humano.`;
 
 function send(res, code, content, type = 'application/json; charset=utf-8') {
   res.writeHead(code, { 'Content-Type': type, 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin' });
