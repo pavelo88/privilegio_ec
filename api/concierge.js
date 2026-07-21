@@ -29,13 +29,13 @@ export default async function handler(req, res) {
         return;
       }
 
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY?.trim();
       if (!apiKey) {
         res.status(503).json({ error: 'El concierge está preparando su atención. Puedes solicitar una asesoría personalizada.' });
         return;
       }
 
-      const model = process.env.GEMINI_MODEL || 'gemini-flash-latest';
+      const model = process.env.GEMINI_MODEL?.trim() || 'gemini-flash-latest';
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
