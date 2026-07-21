@@ -31,8 +31,10 @@ La interfaz no conoce la clave de Gemini. El servidor añade el contexto comerci
 
 1. Conecta el repositorio de GitHub a Vercel.
 2. En el panel de Vercel, añade estas variables de entorno:
-   - `GEMINI_API_KEY`: tu clave real de Google AI Studio.
-   - `GEMINI_MODEL`: `gemini-2.5-flash` (recomendado).
+   - `GROQ_API_KEY`: tu clave real de Groq.
+   - `GROQ_MODEL`: `openai/gpt-oss-20b` (recomendado).
+   - `GEMINI_API_KEY`: tu clave real de Google AI Studio, usada como respaldo.
+   - `GEMINI_MODEL`: `gemini-flash-latest` (respaldo).
 3. Vercel detectará automáticamente la ruta `/api/concierge.js` y la desplegará como serverless function.
 4. La web se sirve estáticamente desde `public/`.
 

@@ -2,6 +2,7 @@
   "version": 2,
   "buildCommand": "npm run build || true",
   "env": {
+    "GROQ_MODEL": "openai/gpt-oss-20b",
     "GEMINI_MODEL": "gemini-flash-latest"
   },
   "functions": {
