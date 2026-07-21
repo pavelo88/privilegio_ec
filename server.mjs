@@ -39,7 +39,7 @@ async function concierge(req, res) {
   if (!message || message.length > 1400) return send(res, 400, { error: 'Escribe una consulta de hasta 1.400 caracteres.' });
   if (!process.env.GEMINI_API_KEY) return send(res, 503, { error: 'El concierge está preparando su atención. Puedes solicitar una asesoría personalizada.' });
   try {
-    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const model = process.env.GEMINI_MODEL || 'gemini-flash-latest';
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: context }] }, contents: [{ role: 'user', parts: [{ text: message }] }], generationConfig: { temperature: 0.45, maxOutputTokens: 220 } })
